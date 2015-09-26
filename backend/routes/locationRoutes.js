@@ -2,19 +2,14 @@
 'use strict';
 var express = require('express'),
   router = express.Router(),
-  Location = require('../models/locations'),
-  expressJoi = require('express-joi'),
-  validateLocation = {
-    longitude: expressJoi.Joi.types.Number().required,
-    latitude: expressJoi.Joi.types.Number().required,
-  };
+  Location = require('../models/locations');
 
 router.get('/', function (req, res) {
   Location.find(
     req.query,
     function (err, locations) {
       if (err) {
-        return console.error(err);
+        return res.json(err);
       }
       console.log(req.params);
       res.send(locations);
@@ -22,6 +17,27 @@ router.get('/', function (req, res) {
   );
 });
 
+router.get('/closest', function (req, res) {
+  var limit = req.query.limit || 10,
+    maxDistance = (req.query.distance || 8) / 6371, //max distance in radians
+    coords = [];
+
+  coords[0] = req.query.longitude;
+  coords[1] = req.query.latitude;
+
+  Location
+    .find({
+      loc: {
+        $near: coords,
+        $maxDistance: maxDistance
+      }
+    }).limit(limit).exec(function (err, locations) {
+      if (err) {
+        return res.json(500, err);
+      }
+      res.json(200, locations);
+    });
+});
 
 router.get('/:_id', function (req, res) {
   Location
@@ -30,7 +46,7 @@ router.get('/:_id', function (req, res) {
     },
       function (err, location) {
         if (err) {
-          return console.error(err);
+          return res.json(err);
         }
         if (location) {
           res.send(location);
@@ -50,7 +66,7 @@ router.delete('/:_id', function (req, res) {
   },
     function (err, location) {
       if (err) {
-        return console.error(err);
+        return res.json(err);
       }
       if (location.result === 0) {
         res.send({
@@ -72,7 +88,7 @@ router.patch('/:_id', function (req, res) {
       req.body,
       function (err, location) {
         if (err) {
-          return console.error(err);
+          return res.json(err);
         }
         res.send({
           success: true,
@@ -83,10 +99,14 @@ router.patch('/:_id', function (req, res) {
 });
 
 
-router.post('/', expressJoi.joiValidate(validateLocation), function (req, res) {
+router.post('/', function (req, res) {
+  console.log(req.body.longitude);
+  if (!isNaN(req.query.longitude) || !isNaN(req.query.latitude)) { res.json("error"); }
   var location = new Location({
-    longitude: req.query.longitude || 0,
-    latitude: req.query.latitude || 0
+    loc: [
+      req.body.longitude || 0,
+      req.body.latitude || 0
+    ]
   });
   location.save(function (err) {
     if (err) {
@@ -106,9 +126,8 @@ router.post('/', expressJoi.joiValidate(validateLocation), function (req, res) {
 router.delete('/', function (req, res) {
   Location.remove(function (err) {
     if (err) {
-      return console.error(err);
+      return res.json(err);
     }
-    console.log(req.params);
     res.send({
       succes: true,
       message: 'Everything was deleted'
