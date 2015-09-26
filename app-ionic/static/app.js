@@ -8,7 +8,7 @@ angular.module('ionic.example', ['ionic', 'firebase'])
         
         var mapOptions = {
           center: myLatlng,
-          zoom: 16,
+          zoom: 15,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         var map = new google.maps.Map(document.getElementById("map"),
@@ -26,25 +26,60 @@ angular.module('ionic.example', ['ionic', 'firebase'])
 
         $scope.map = map;
 
-		$scope.addMarker();
+		$scope.loadSpots();
       }
       google.maps.event.addDomListener(window, 'load', initialize);
 
-		$scope.addMarker = function() {
-        	var myLatlng = new google.maps.LatLng(43.07493,-89.381388);
+	$scope.loadSpots = function() {
+		//uncomment  to add test marker
+		/*
+		MapItems.$add({
+			'icon': '',
+			'name': 'TestSpot',
+			'shortdesc': 'This is a test spot',
+			'location': {
+				'lat': 123,
+				'lng': 123
+			}
+	  	});
+		*/
+
+
+		  MapItems.$loaded().then(function() {
+			  console.log('laoded');
+			  angular.forEach(MapItems,function(item) {
+				  console.log('item',item);
+				  $scope.addMarker(item);
+			  });
+			});
+	  }
+
+		$scope.addMarker = function(spot) {
+			//Info window's content
+			var contentString = "<div><div><img class='shop-icon' src='" + spot.icon+ "' alt='" + spot.name+ "'/><span class='item-text-wrap'>" + spot.name+ "</span></div><div class='shop-offer'>"+spot.shortdesc+"</div><div class='card'><img class='card-art' src='"+spot.icon+"' alt='"+spot.name+"'/></div></div>";
+			debugger;
+			var compiled = $compile(contentString)($scope);
+
+			//Get location
+			var locationLatLng = new google.maps.LatLng(spot.location.lat, spot.location.lng);
+
+			//Create marker
 			var marker = new google.maps.Marker({
-			  position: myLatlng,
-			  map: $scope.map,
-			  title: 'Uluru (Ayers Rock)'
+				position: locationLatLng,
+				map: $scope.map,
+				title: spot.name
 			});
 
-			google.maps.event.addListener(marker, 'click', function() {
-			  infowindow.open($scope.map,marker);
+			google.maps.event.addListener(marker, 'click', function () {
+				infoWindow.setContent(compiled[0]);
+				infoWindow.open($scope.map, marker);
 			});
 
-
+		    $scope.markers.push(marker);
 		}
-      
+
+	$scope.markers = [];
+
       $scope.centerOnMe = function() {
         if(!$scope.map) {
           return;
