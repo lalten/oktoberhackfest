@@ -2,7 +2,19 @@ var FBURL = "https://vivid-inferno-1896.firebaseio.com/"
 
 angular.module('ionic.example', ['ionic', 'firebase'])
 
-.controller('MapCtrl', function($scope, $ionicLoading, $compile, MapItems) {
+.config(function($stateProvider, $urlRouterProvider) {
+	$urlRouterProvider.otherwise('/')
+  	$stateProvider.state('home', {
+		url: '/',
+		templateUrl: 'home.html'
+	})
+	.state('spot', {
+		url: '/spot',
+		templateUrl: 'spot.html'
+	})
+})
+
+.controller('HomeCtrl', function($scope, $ionicLoading, $compile, MapItems) {
     function initialize() {
         var myLatlng = new google.maps.LatLng(43.07493, -89.381388);
 
@@ -13,15 +25,6 @@ angular.module('ionic.example', ['ionic', 'firebase'])
         };
         var map = new google.maps.Map(document.getElementById("map"),
             mapOptions);
-
-        //Marker + infowindow + angularjs compiled ng-click
-        var contentString = "<div><a ng-click='clickTest()'>Click me!</a></div>";
-        var compiled = $compile(contentString)($scope);
-
-        var infowindow = new google.maps.InfoWindow({
-            content: compiled[0]
-        });
-
 
 
         $scope.map = map;
@@ -54,10 +57,11 @@ angular.module('ionic.example', ['ionic', 'firebase'])
         });
     }
 
+	$scope.infoWindow = new google.maps.InfoWindow();
+
     $scope.addMarker = function(spot) {
         //Info window's content
-        var contentString = "<div><div><img class='shop-icon' src='" + spot.icon + "' alt='" + spot.name + "'/><span class='item-text-wrap'>" + spot.name + "</span></div><div class='shop-offer'>" + spot.shortdesc + "</div><div class='card'><img class='card-art' src='" + spot.icon + "' alt='" + spot.name + "'/></div></div>";
-        debugger;
+        var contentString = "<div><div><img class='shop-icon' src='" + spot.icon + "' alt='" + spot.name + "'/><span class='item-text-wrap'>" + spot.name + "</span></div><div class='shop-offer'>" + spot.shortdesc + "</div><div class='card'><img class='card-art' src='" + spot.icon + "' alt='" + spot.name + "'/><a href='#/spot'>more Info</a></div></div>";
         var compiled = $compile(contentString)($scope);
 
         //Get location
@@ -71,8 +75,8 @@ angular.module('ionic.example', ['ionic', 'firebase'])
         });
 
         google.maps.event.addListener(marker, 'click', function() {
-            infoWindow.setContent(compiled[0]);
-            infoWindow.open($scope.map, marker);
+            $scope.infoWindow.setContent(compiled[0]);
+            $scope.infoWindow.open($scope.map, marker);
         });
 
         $scope.markers.push(marker);
@@ -101,6 +105,9 @@ angular.module('ionic.example', ['ionic', 'firebase'])
     $scope.clickTest = function() {
         alert('Example of infowindow with ng-click')
     };
+
+})
+.controller('SpotCtrl', function($scope, $ionicLoading, $compile, MapItems) {
 
 })
 
