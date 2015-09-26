@@ -50,7 +50,9 @@
          ...
         </div>
         <div class="col">
-          <input type="file" accept="image/*" capture="camera" ng-model="uploadField" onchange="angular.element(this).scope().upload()">
+          <form method="post" action="http://timecapsule-52012.onmodulus.net/">
+            <input type="file" name="img" accept="image/*" capture="camera" onchange="this.form.submit();">
+          </form>
         </div>
       </div>
     </ion-content>
