@@ -137,14 +137,14 @@ angular.module('ionic.example', ['ionic', 'firebase'])
     };
 
 })
-.controller('SpotCtrl', function($scope, $ionicPlatform) {
+.controller('SpotCtrl', function($scope) {
 
 
-	$scope.upload = function(){
-
-console.log($scope.uploadField);
-			alert('Upload file: ' + $scope.uploadField.value);
-	};
+  $scope.items = [
+    { id: 0 },
+    { id: 1 }
+  ];
+  
 })
 
 .factory("MapItems", function($firebaseArray) {
