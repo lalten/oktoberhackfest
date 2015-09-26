@@ -1,38 +1,41 @@
-var FBURL="https://vivid-inferno-1896.firebaseio.com/"
+var FBURL = "https://vivid-inferno-1896.firebaseio.com/"
 
 angular.module('ionic.example', ['ionic', 'firebase'])
 
-    .controller('MapCtrl', function($scope, $ionicLoading, $compile, MapItems) {
-      function initialize() {
-        var myLatlng = new google.maps.LatLng(43.07493,-89.381388);
-        
+.config(function($stateProvider, $urlRouterProvider) {
+	$urlRouterProvider.otherwise('/')
+  	$stateProvider.state('home', {
+		url: '/',
+		templateUrl: 'home.html'
+	})
+	.state('spot', {
+		url: '/spot',
+		templateUrl: 'spot.html'
+	})
+})
+
+.controller('HomeCtrl', function($scope, $ionicLoading, $compile, MapItems) {
+    function initialize() {
+        var myLatlng = new google.maps.LatLng(43.07493, -89.381388);
+
         var mapOptions = {
-          center: myLatlng,
-          zoom: 15,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
+            center: myLatlng,
+            zoom: 15,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
         };
         var map = new google.maps.Map(document.getElementById("map"),
             mapOptions);
-        
-        //Marker + infowindow + angularjs compiled ng-click
-        var contentString = "<div><a ng-click='clickTest()'>Click me!</a></div>";
-        var compiled = $compile(contentString)($scope);
-
-        var infowindow = new google.maps.InfoWindow({
-          content: compiled[0]
-        });
-
 
 
         $scope.map = map;
 
-		$scope.loadSpots();
-      }
-      google.maps.event.addDomListener(window, 'load', initialize);
+        $scope.loadSpots();
+    }
+    google.maps.event.addDomListener(window, 'load', initialize);
 
-	$scope.loadSpots = function() {
-		//uncomment  to add test marker
-		/*
+    $scope.loadSpots = function() {
+        //uncomment  to add test marker
+        /*
 		MapItems.$add({
 			'icon': '',
 			'name': 'TestSpot',
@@ -45,66 +48,70 @@ angular.module('ionic.example', ['ionic', 'firebase'])
 		*/
 
 
-		  MapItems.$loaded().then(function() {
-			  console.log('laoded');
-			  angular.forEach(MapItems,function(item) {
-				  console.log('item',item);
-				  $scope.addMarker(item);
-			  });
-			});
-	  }
+        MapItems.$loaded().then(function() {
+            console.log('laoded');
+            angular.forEach(MapItems, function(item) {
+                console.log('item', item);
+                $scope.addMarker(item);
+            });
+        });
+    }
 
-		$scope.addMarker = function(spot) {
-			//Info window's content
-			var contentString = "<div><div><img class='shop-icon' src='" + spot.icon+ "' alt='" + spot.name+ "'/><span class='item-text-wrap'>" + spot.name+ "</span></div><div class='shop-offer'>"+spot.shortdesc+"</div><div class='card'><img class='card-art' src='"+spot.icon+"' alt='"+spot.name+"'/></div></div>";
-			debugger;
-			var compiled = $compile(contentString)($scope);
+	$scope.infoWindow = new google.maps.InfoWindow();
 
-			//Get location
-			var locationLatLng = new google.maps.LatLng(spot.location.lat, spot.location.lng);
+    $scope.addMarker = function(spot) {
+        //Info window's content
+        var contentString = "<div><div><img class='shop-icon' src='" + spot.icon + "' alt='" + spot.name + "'/><span class='item-text-wrap'>" + spot.name + "</span></div><div class='shop-offer'>" + spot.shortdesc + "</div><div class='card'><img class='card-art' src='" + spot.icon + "' alt='" + spot.name + "'/><a href='#/spot'>more Info</a></div></div>";
+        var compiled = $compile(contentString)($scope);
 
-			//Create marker
-			var marker = new google.maps.Marker({
-				position: locationLatLng,
-				map: $scope.map,
-				title: spot.name
-			});
+        //Get location
+        var locationLatLng = new google.maps.LatLng(spot.location.lat, spot.location.lng);
 
-			google.maps.event.addListener(marker, 'click', function () {
-				infoWindow.setContent(compiled[0]);
-				infoWindow.open($scope.map, marker);
-			});
+        //Create marker
+        var marker = new google.maps.Marker({
+            position: locationLatLng,
+            map: $scope.map,
+            title: spot.name
+        });
 
-		    $scope.markers.push(marker);
-		}
+        google.maps.event.addListener(marker, 'click', function() {
+            $scope.infoWindow.setContent(compiled[0]);
+            $scope.infoWindow.open($scope.map, marker);
+        });
 
-	$scope.markers = [];
+        $scope.markers.push(marker);
+    }
 
-      $scope.centerOnMe = function() {
-        if(!$scope.map) {
-          return;
+    $scope.markers = [];
+
+    $scope.centerOnMe = function() {
+        if (!$scope.map) {
+            return;
         }
 
         $scope.loading = $ionicLoading.show({
-          content: 'Getting current location...',
-          showBackdrop: false
+            content: 'Getting current location...',
+            showBackdrop: false
         });
 
         navigator.geolocation.getCurrentPosition(function(pos) {
-          $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
-          $scope.loading.hide();
+            $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
+            $scope.loading.hide();
         }, function(error) {
-          alert('Unable to get location: ' + error.message);
+            alert('Unable to get location: ' + error.message);
         });
-      };
-      
-      $scope.clickTest = function() {
+    };
+
+    $scope.clickTest = function() {
         alert('Example of infowindow with ng-click')
-      };
-      
-    })
+    };
+
+})
+.controller('SpotCtrl', function($scope, $ionicLoading, $compile, MapItems) {
+
+})
 
 .factory("MapItems", function($firebaseArray) {
-  var itemsRef = new Firebase(FBURL+"/MapItems");
-  return $firebaseArray(itemsRef);
+    var itemsRef = new Firebase(FBURL + "/MapItems");
+    return $firebaseArray(itemsRef);
 })

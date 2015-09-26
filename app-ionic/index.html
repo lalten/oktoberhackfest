@@ -18,15 +18,30 @@
 
     <link href="/static/style.css" rel="stylesheet">
   </head>
-  <body ng-controller="MapCtrl">
-    <ion-header-bar class="bar-dark" >
-      <h1 class="title">Map</h1>
-    </ion-header-bar>
-    <ion-content>
-      <div id="map" data-tap-disabled="true"></div>
-    </ion-content>
-    <ion-footer-bar class="bar-dark">
-      <a ng-click="centerOnMe()" class="button button-icon icon ion-navigate">Find Me</a>
-    </ion-footer-bar>
+  <body>
+	<ion-nav-bar class="bar-dark nav-title-slide-ios7" align-title="center">
+		  <ion-nav-back-button class="button-icon ion-arrow-left-c">
+		  </ion-nav-back-button>
+    </ion-nav-bar>
+
+    <ion-nav-view class="slide-left-right"></ion-nav-view>
+
+	<script type="text/ng-template" id="home.html">
+	  <ion-view title="Home">
+		<ion-content ng-controller="HomeCtrl">
+		  <div id="map" data-tap-disabled="true"></div>
+		</ion-content>
+		<ion-footer-bar class="bar-dark">
+		  <a ng-click="centerOnMe()" class="button button-icon icon ion-navigate">Find Me</a>
+		</ion-footer-bar>
+	  </ion-view>
+	</script>
+	<script type="text/ng-template" id="spot.html">
+	  <ion-view title="Spot XY">
+		<ion-content ng-controller="SpotCtrl">
+			Hey, spot xy info here!
+		</ion-content>
+	  </ion-view>
+	</script>
   </body>
 </html>
