@@ -1,4 +1,4 @@
-<html ng-app="app-ionic">
+<html ng-app="ionic.example">
   <head>
     <meta charset="utf-8">
     <title>Map</title>
@@ -7,6 +7,8 @@
     <link href="https://code.ionicframework.com/nightly/css/ionic.css" rel="stylesheet">
     <script src="https://code.ionicframework.com/nightly/js/ionic.bundle.js"></script>
 
+    <script src="lib/ngCordova/dist/ng-cordova.js"></script>
+    
     <!-- google maps javascript -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB16sGmIekuGIvYOfNoW9T44377IU2d2Es&sensor=true"></script>
 
@@ -28,8 +30,8 @@
 
 	<script type="text/ng-template" id="home.html">
 	  <ion-view title="Home">
-		<ion-content ng-controller="HomeCtrl">
-		  <div id="map" data-tap-disabled="true"></div>
+		<ion-content ng-controller="HomeCtrl" ion-scroll="false">
+		  <div id="map" data-tap-disabled="false"></div>
 		  <div id="locateMe">
 		  	<a ng-click="centerOnMe()" class="button button-icon icon ion-android-locate"></a>
 		  </div>
