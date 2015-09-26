@@ -14,7 +14,7 @@ router.get('/', function (req, res) {
     req.query,
     function (err, locations) {
       if (err) {
-        return console.error(err);
+        return res.json(err);
       }
       console.log(req.params);
       res.send(locations);
@@ -22,6 +22,27 @@ router.get('/', function (req, res) {
   );
 });
 
+router.get('/closest', function (req, res) {
+  var limit = req.query.limit || 10,
+    maxDistance = (req.query.distance || 8) / 6371, //max distance in radians
+    coords = [];
+
+  coords[0] = req.query.longitude;
+  coords[1] = req.query.latitude;
+
+  Location
+    .find({
+      loc: {
+        $near: coords,
+        $maxDistance: maxDistance
+      }
+    }).limit(limit).exec(function (err, locations) {
+      if (err) {
+        return res.json(500, err);
+      }
+      res.json(200, locations);
+    });
+});
 
 router.get('/:_id', function (req, res) {
   Location
@@ -30,7 +51,7 @@ router.get('/:_id', function (req, res) {
     },
       function (err, location) {
         if (err) {
-          return console.error(err);
+          return res.json(err);
         }
         if (location) {
           res.send(location);
@@ -50,7 +71,7 @@ router.delete('/:_id', function (req, res) {
   },
     function (err, location) {
       if (err) {
-        return console.error(err);
+        return res.json(err);
       }
       if (location.result === 0) {
         res.send({
@@ -72,7 +93,7 @@ router.patch('/:_id', function (req, res) {
       req.body,
       function (err, location) {
         if (err) {
-          return console.error(err);
+          return res.json(err);
         }
         res.send({
           success: true,
@@ -103,12 +124,11 @@ router.post('/', expressJoi.joiValidate(validateLocation), function (req, res) {
 
 // ===============Debug purposes only==================
 
-router.delete('/', function (req, res) {
+router.delete('/', function (res) {
   Location.remove(function (err) {
     if (err) {
-      return console.error(err);
+      return res.json(err);
     }
-    console.log(req.params);
     res.send({
       succes: true,
       message: 'Everything was deleted'
