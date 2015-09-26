@@ -7,5 +7,5 @@ var folders = require('./folderRoutes'),
 module.exports = function (app) {
   app.use('/v1/users', users);
   app.use('/v1/locations', locations);
-  // app.use('/v1/folders', folders);
+  app.use('/v1/folders', folders);
 };
