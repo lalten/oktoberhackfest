@@ -1,85 +1,127 @@
-// Ionic Starter App
+var FBURL = "https://vivid-inferno-1896.firebaseio.com/"
 
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
-// 'starter.services' is found in services.js
-// 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
-
-.run(function($ionicPlatform) {
-  $ionicPlatform.ready(function() {
-    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-    // for form inputs)
-    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-      cordova.plugins.Keyboard.disableScroll(true);
-
-    }
-    if (window.StatusBar) {
-      // org.apache.cordova.statusbar required
-      StatusBar.styleLightContent();
-    }
-  });
-})
+angular.module('app-ionic', ['ionic', 'firebase'])
 
 .config(function($stateProvider, $urlRouterProvider) {
+	$urlRouterProvider.otherwise('/')
+  	$stateProvider.state('home', {
+		url: '/',
+		templateUrl: 'home.html'
+	})
+	.state('spot', {
+		url: '/spot',
+		templateUrl: 'spot.html'
+	})
+})
 
-  // Ionic uses AngularUI Router which uses the concept of states
-  // Learn more here: https://github.com/angular-ui/ui-router
-  // Set up the various states which the app can be in.
-  // Each state's controller can be found in controllers.js
-  $stateProvider
+.controller('HomeCtrl', function($scope, $ionicLoading, $compile, MapItems, $state) {
+    function initialize() {
+        var myLatlng = new google.maps.LatLng(43.07493, -89.381388);
 
-  // setup an abstract state for the tabs directive
-    .state('tab', {
-    url: '/tab',
-    abstract: true,
-    templateUrl: 'templates/tabs.html'
-  })
+        var mapOptions = {
+            center: myLatlng,
+            zoom: 15,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            disableDefaultUI: true
+        };
+        var map = new google.maps.Map(document.getElementById("map"),
+            mapOptions);
 
-  // Each tab has its own nav history stack:
 
-  .state('tab.dash', {
-    url: '/dash',
-    views: {
-      'tab-dash': {
-        templateUrl: 'templates/tab-dash.html',
-        controller: 'DashCtrl'
-      }
+        $scope.map = map;
+
+        $scope.loadSpots();
     }
-  })
+    google.maps.event.addDomListener(window, 'load', initialize);
 
-  .state('tab.chats', {
-      url: '/chats',
-      views: {
-        'tab-chats': {
-          templateUrl: 'templates/tab-chats.html',
-          controller: 'ChatsCtrl'
-        }
-      }
-    })
-    .state('tab.chat-detail', {
-      url: '/chats/:chatId',
-      views: {
-        'tab-chats': {
-          templateUrl: 'templates/chat-detail.html',
-          controller: 'ChatDetailCtrl'
-        }
-      }
-    })
+    $scope.loadSpots = function() {
+        //uncomment  to add test marker
+        /*
+		MapItems.$add({
+			'icon': '',
+			'name': 'TestSpot',
+			'shortdesc': 'This is a test spot',
+			'location': {
+				'lat': 123,
+				'lng': 123
+			}
+	  	});
+		*/
 
-  .state('tab.account', {
-    url: '/account',
-    views: {
-      'tab-account': {
-        templateUrl: 'templates/tab-account.html',
-        controller: 'AccountCtrl'
-      }
+
+        MapItems.$loaded().then(function() {
+            console.log('laoded');
+            angular.forEach(MapItems, function(item) {
+                console.log('item', item);
+                $scope.addMarker(item);
+            });
+        });
     }
-  });
 
-  // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
+	$scope.infoWindow = new google.maps.InfoWindow();
 
-});
+    $scope.addMarker = function(spot) {
+        //Info window's content
+        var contentString = "<div><div><img class='shop-icon' src='" + spot.icon + "' alt='" + spot.name + "'/><span class='item-text-wrap'>" + spot.name + "</span></div><div class='shop-offer'>" + spot.shortdesc + "</div><div class='card'><img class='card-art' src='" + spot.icon + "' alt='" + spot.name + "'/><a href='#/spot'>more Info</a></div></div>";
+        var compiled = $compile(contentString)($scope);
+
+        //Get location
+        var locationLatLng = new google.maps.LatLng(spot.location.lat, spot.location.lng);
+
+        //Create marker
+        var marker = new google.maps.Marker({
+            position: locationLatLng,
+            map: $scope.map,
+            title: spot.name
+        });
+
+        google.maps.event.addListener(marker, 'click', function() {
+			//go to details page
+			$state.go('spot',{id: 123});
+
+			//dont show any info window anymore
+            //$scope.infoWindow.setContent(compiled[0]);
+            //$scope.infoWindow.open($scope.map, marker);
+        });
+
+        $scope.markers.push(marker);
+    }
+
+    $scope.markers = [];
+
+    $scope.centerOnMe = function() {
+        if (!$scope.map) {
+            return;
+        }
+
+        $scope.loading = $ionicLoading.show({
+            content: 'Getting current location...',
+            showBackdrop: false
+        });
+
+        navigator.geolocation.getCurrentPosition(function(pos) {
+            $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
+			new google.maps.Marker({
+				position: {lat: pos.coords.latitude, lng: pos.coords.longitude},
+				map: $scope.map,
+			  });
+
+            $ionicLoading.hide();
+        }, function(error) {
+            alert('Unable to get location: ' + error.message);
+        });
+    };
+
+    $scope.clickTest = function() {
+        alert('Example of infowindow with ng-click')
+    };
+
+})
+.controller('SpotCtrl', function($scope, $ionicLoading, $compile, MapItems) {
+
+})
+
+.factory("MapItems", function($firebaseArray) {
+    var itemsRef = new Firebase(FBURL + "/MapItems");
+    return $firebaseArray(itemsRef);
+})
