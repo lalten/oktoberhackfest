@@ -21,15 +21,26 @@
     <link href="css/style.css" rel="stylesheet">
   </head>
   <body>
-	<ion-nav-bar class="bar-dark nav-title-slide-ios7" align-title="center">
-		  <ion-nav-back-button class="button-icon ion-arrow-left-c">
-		  </ion-nav-back-button>
+	<ion-nav-bar class="bar-stable nav-title-slide-ios7" align-title="center">
+		<ion-nav-view>
+			<ion-view>
+				<ion-nav-title>
+		      		<img src="https://commons.wikimedia.org/wiki/File:Dell_Logo.png">
+		   		</ion-nav-title>
+		   	</ion-view>
+		</ion-nav-view> 		
+		<ion-nav-buttons side="left">
+		    <a style="color: white;" href="/www" class="button button-icon icon ion-home"></a> 
+		</ion-nav-buttons>
+		<ion-nav-buttons side="right">
+			 <a style="color: white;" class="button button-icon icon ion-person-stalker" ng-click="clickCreaElencoSpese()" ng-href="#/profile"></a> 
+		</ion-nav-buttons>
     </ion-nav-bar>
 
     <ion-nav-view class="slide-left-right"></ion-nav-view>
 
 	<script type="text/ng-template" id="home.html">
-	  <ion-view title="Home">
+	  <ion-view >
 		<ion-content ng-controller="HomeCtrl" ion-scroll="false">
 		  <div id="map" data-tap-disabled="false"></div>
 		  <div id="locateMe">
@@ -37,11 +48,31 @@
 		  </div>
 		</ion-content>
 		<ion-footer-bar class="bar-dark">
-		  <a href="#/spot" class="button button-icon" id="btnSpot">Spot XY</a>
+		  <a href="#/spot" class="button button-icon" id="btnSpot">Hey man! You entered IHK space. Press to see the content!</a>
 		</ion-footer-bar>
 	  </ion-view>
 	</script>
 	<script type="text/ng-template" id="spot.html">
+<<<<<<< HEAD
+	  <ion-view>
+		<ion-content ng-controller="SpotCtrl">
+			<div class="row">
+				<div class="col col-80"> 
+					<div class="list list-inset">
+					 <label class="item item-input">
+					    <i class="icon ion-search placeholder-icon"></i>
+					    <input type="text" placeholder="Search">
+					  </label>
+					</div>
+				</div>
+				<div class="col col-40">
+					<div class="list list-inset">
+						<button class="button button-icon icon ion-upload"></button> 
+					</div>	
+				</div>
+			</div>		
+		</ion-content>
+=======
 	  <ion-view title="Spot View">
 		<ion-content ng-controller="SpotCtrl">
       <h1 class="title">Spot View</h1>
@@ -56,6 +87,7 @@
         </div>
       </div>
     </ion-content>
+>>>>>>> 8ccd6ca3d78b858fc6004bde26aedbc0bf9423cd
 	  </ion-view>
 	</script>
   </body>
