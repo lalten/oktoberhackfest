@@ -136,12 +136,6 @@ angular.module('ionic.example', ['ionic', 'firebase'])
       alert('Example of infowindow with ng-click')
     };
 
-<<<<<<< HEAD
-  })
-  .controller('SpotCtrl', function($scope, $ionicLoading, $compile, MapItems) {
-
-  })
-=======
 })
 .controller('SpotCtrl', function($scope, $ionicPlatform) {
 
@@ -152,7 +146,6 @@ console.log($scope.uploadField);
 			alert('Upload file: ' + $scope.uploadField.value);
 	};
 })
->>>>>>> 8fce1529eb5d8dcf2120d445c8dee2131d8103c7
 
 .factory("MapItems", function($firebaseArray) {
   var itemsRef = new Firebase(FBURL + "/MapItems");
