@@ -1,6 +1,8 @@
-angular.module('ionic.example', ['ionic'])
+var FBURL="https://vivid-inferno-1896.firebaseio.com/"
 
-    .controller('MapCtrl', function($scope, $ionicLoading, $compile) {
+angular.module('ionic.example', ['ionic', 'firebase'])
+
+    .controller('MapCtrl', function($scope, $ionicLoading, $compile, MapItems) {
       function initialize() {
         var myLatlng = new google.maps.LatLng(43.07493,-89.381388);
         
@@ -20,19 +22,28 @@ angular.module('ionic.example', ['ionic'])
           content: compiled[0]
         });
 
-        var marker = new google.maps.Marker({
-          position: myLatlng,
-          map: map,
-          title: 'Uluru (Ayers Rock)'
-        });
 
-        google.maps.event.addListener(marker, 'click', function() {
-          infowindow.open(map,marker);
-        });
 
         $scope.map = map;
+
+		$scope.addMarker();
       }
       google.maps.event.addDomListener(window, 'load', initialize);
+
+		$scope.addMarker = function() {
+        	var myLatlng = new google.maps.LatLng(43.07493,-89.381388);
+			var marker = new google.maps.Marker({
+			  position: myLatlng,
+			  map: $scope.map,
+			  title: 'Uluru (Ayers Rock)'
+			});
+
+			google.maps.event.addListener(marker, 'click', function() {
+			  infowindow.open($scope.map,marker);
+			});
+
+
+		}
       
       $scope.centerOnMe = function() {
         if(!$scope.map) {
@@ -56,4 +67,9 @@ angular.module('ionic.example', ['ionic'])
         alert('Example of infowindow with ng-click')
       };
       
-    });
+    })
+
+.factory("MapItems", function($firebaseArray) {
+  var itemsRef = new Firebase(FBURL+"/MapItems");
+  return $firebaseArray(itemsRef);
+})
