@@ -11,12 +11,22 @@ router.get('/', function (req, res) {
       if (err) {
         return res.json(err);
       }
-      console.log(req.params);
       res.send(locations);
     }
   );
 });
 
+router.get('/distance/:_id', function (req, res) {
+
+  var coords = [],
+    folder = Location
+      .findOne(
+        req.query._id
+      );
+  coords[0] = req.query.longitude;
+  coords[1] = req.query.latitude;
+
+});
 router.get('/closest', function (req, res) {
   var limit = req.query.limit || 10,
     maxDistance = (req.query.distance || 8) / 6371, //max distance in radians
