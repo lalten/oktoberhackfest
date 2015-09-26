@@ -1,4 +1,4 @@
-<html ng-app="app-ionic">
+<html ng-app="ionic.example">
   <head>
     <meta charset="utf-8">
     <title>Map</title>
@@ -30,8 +30,8 @@
 
 	<script type="text/ng-template" id="home.html">
 	  <ion-view title="Home">
-		<ion-content ng-controller="HomeCtrl">
-		  <div id="map" data-tap-disabled="true"></div>
+		<ion-content ng-controller="HomeCtrl" ion-scroll="false">
+		  <div id="map" data-tap-disabled="false"></div>
 		  <div id="locateMe">
 		  	<a ng-click="centerOnMe()" class="button button-icon icon ion-android-locate"></a>
 		  </div>
