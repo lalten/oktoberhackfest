@@ -1,6 +1,6 @@
 var FBURL = "https://vivid-inferno-1896.firebaseio.com/"
 
-angular.module('app-ionic', ['ionic', 'firebase', 'ngCordova'])
+angular.module('ionic.example', ['ionic', 'firebase'])
 
 .config(function($stateProvider, $urlRouterProvider) {
 	$urlRouterProvider.otherwise('/')
@@ -14,9 +14,10 @@ angular.module('app-ionic', ['ionic', 'firebase', 'ngCordova'])
 	})
 })
 
-.controller('HomeCtrl', function($scope, $ionicLoading, $compile, MapItems, $state) {
+.controller('HomeCtrl', function($scope, $ionicLoading, $compile, MapItems, $state, PositionFactory) {
     function initialize() {
-        var myLatlng = new google.maps.LatLng(43.07493, -89.381388);
+		var pos = PositionFactory.getPosition();
+        var myLatlng = new google.maps.LatLng(pos.lat,pos.lng);
 
         var mapOptions = {
             center: myLatlng,
@@ -30,6 +31,7 @@ angular.module('app-ionic', ['ionic', 'firebase', 'ngCordova'])
 
         $scope.map = map;
 
+		$scope.updateMyMarker(pos);
         $scope.loadSpots();
     }
     google.maps.event.addDomListener(window, 'load', initialize);
@@ -50,9 +52,7 @@ angular.module('app-ionic', ['ionic', 'firebase', 'ngCordova'])
 
 
         MapItems.$loaded().then(function() {
-            console.log('laoded');
             angular.forEach(MapItems, function(item) {
-                console.log('item', item);
                 $scope.addMarker(item);
             });
         });
@@ -89,26 +89,41 @@ angular.module('app-ionic', ['ionic', 'firebase', 'ngCordova'])
 
     $scope.markers = [];
 
+	$scope.myMarker = new google.maps.Marker();
+	$scope.updateMyMarker = function(pos) {
+		$scope.myMarker.setPosition(pos);
+		$scope.myMarker.setMap($scope.map);
+	}
+
     $scope.centerOnMe = function() {
         if (!$scope.map) {
             return;
         }
 
-        $scope.loading = $ionicLoading.show({
-            content: 'Getting current location...',
+        $ionicLoading.show({
+            template: 'Getting current location...',
             showBackdrop: false
         });
 
         navigator.geolocation.getCurrentPosition(function(pos) {
-            $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
-			new google.maps.Marker({
-				position: {lat: pos.coords.latitude, lng: pos.coords.longitude},
-				map: $scope.map,
-			  });
+			var pos = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+			PositionFactory.setPosition(pos);
+
+            $scope.map.setCenter(new google.maps.LatLng(pos.lat, pos.lng ));
+
+			$scope.updateMyMarker(pos);
+
 
             $ionicLoading.hide();
         }, function(error) {
-            alert('Unable to get location: ' + error.message);
+            console.warn('Unable to get location: ' + error.message);
+
+            $ionicLoading.hide();
+        	var a = $ionicLoading.show({
+				template: 'Unable to get your location',
+				showBackdrop: false,
+				duration: 1000,
+        	});
         });
     };
 
@@ -124,4 +139,29 @@ angular.module('app-ionic', ['ionic', 'firebase', 'ngCordova'])
 .factory("MapItems", function($firebaseArray) {
     var itemsRef = new Firebase(FBURL + "/MapItems");
     return $firebaseArray(itemsRef);
+})
+
+.factory("PositionFactory", function() {
+	function getPosition() {
+		this.pos = window.localStorage.getItem('pos.me');
+		if(this.pos) {
+			this.pos = angular.fromJson(this.pos);
+		} else {
+			this.pos = {
+				//get OHF15 location as default
+				lat: 53.5448132,
+				lng: 9.9514091,
+			}
+		}
+		return this.pos;
+	}
+
+	function setPosition(pos) {
+		this.pos = pos;
+		window.localStorage.setItem('pos.me',angular.toJson(pos));
+	}
+	return {
+		getPosition: getPosition,
+		setPosition: setPosition
+	}
 })
