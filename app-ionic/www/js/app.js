@@ -117,8 +117,14 @@ angular.module('app-ionic', ['ionic', 'firebase', 'ngCordova'])
     };
 
 })
-.controller('SpotCtrl', function($scope, $ionicLoading, $compile, MapItems) {
+.controller('SpotCtrl', function($scope, $ionicPlatform, $cordovaImagePicker) {
 
+
+	$scope.upload = function(){
+
+console.log($scope.uploadField);
+			alert('Upload file: ' + $scope.uploadField.value);
+	};
 })
 
 .factory("MapItems", function($firebaseArray) {
