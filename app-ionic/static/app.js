@@ -14,14 +14,15 @@ angular.module('ionic.example', ['ionic', 'firebase'])
 	})
 })
 
-.controller('HomeCtrl', function($scope, $ionicLoading, $compile, MapItems) {
+.controller('HomeCtrl', function($scope, $ionicLoading, $compile, MapItems, $state) {
     function initialize() {
         var myLatlng = new google.maps.LatLng(43.07493, -89.381388);
 
         var mapOptions = {
             center: myLatlng,
             zoom: 15,
-            mapTypeId: google.maps.MapTypeId.ROADMAP
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            disableDefaultUI: true
         };
         var map = new google.maps.Map(document.getElementById("map"),
             mapOptions);
@@ -75,8 +76,12 @@ angular.module('ionic.example', ['ionic', 'firebase'])
         });
 
         google.maps.event.addListener(marker, 'click', function() {
-            $scope.infoWindow.setContent(compiled[0]);
-            $scope.infoWindow.open($scope.map, marker);
+			//go to details page
+			$state.go('spot',{id: 123});
+
+			//dont show any info window anymore
+            //$scope.infoWindow.setContent(compiled[0]);
+            //$scope.infoWindow.open($scope.map, marker);
         });
 
         $scope.markers.push(marker);
@@ -96,7 +101,12 @@ angular.module('ionic.example', ['ionic', 'firebase'])
 
         navigator.geolocation.getCurrentPosition(function(pos) {
             $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
-            $scope.loading.hide();
+			new google.maps.Marker({
+				position: {lat: pos.coords.latitude, lng: pos.coords.longitude},
+				map: $scope.map,
+			  });
+
+            $ionicLoading.hide();
         }, function(error) {
             alert('Unable to get location: ' + error.message);
         });
