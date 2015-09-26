@@ -2,12 +2,7 @@
 'use strict';
 var express = require('express'),
   router = express.Router(),
-  Location = require('../models/locations'),
-  expressJoi = require('express-joi'),
-  validateLocation = {
-    longitude: expressJoi.Joi.types.Number().required,
-    latitude: expressJoi.Joi.types.Number().required,
-  };
+  Location = require('../models/locations');
 
 router.get('/', function (req, res) {
   Location.find(
@@ -104,10 +99,14 @@ router.patch('/:_id', function (req, res) {
 });
 
 
-router.post('/', expressJoi.joiValidate(validateLocation), function (req, res) {
+router.post('/', function (req, res) {
+  console.log(req.body.longitude);
+  if (!isNaN(req.query.longitude) || !isNaN(req.query.latitude)) { res.json("error"); }
   var location = new Location({
-    longitude: req.query.longitude || 0,
-    latitude: req.query.latitude || 0
+    loc: [
+      req.body.longitude || 0,
+      req.body.latitude || 0
+    ]
   });
   location.save(function (err) {
     if (err) {
@@ -124,7 +123,7 @@ router.post('/', expressJoi.joiValidate(validateLocation), function (req, res) {
 
 // ===============Debug purposes only==================
 
-router.delete('/', function (res) {
+router.delete('/', function (req, res) {
   Location.remove(function (err) {
     if (err) {
       return res.json(err);
