@@ -1,6 +1,6 @@
 var FBURL = "https://vivid-inferno-1896.firebaseio.com/"
 
-angular.module('app-ionic', ['ionic', 'firebase'])
+angular.module('app-ionic', ['ionic', 'firebase', 'ngCordova'])
 
 .config(function($stateProvider, $urlRouterProvider) {
 	$urlRouterProvider.otherwise('/')
