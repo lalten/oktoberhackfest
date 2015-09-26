@@ -132,7 +132,7 @@ angular.module('ionic.example', ['ionic', 'firebase'])
     };
 
 })
-.controller('SpotCtrl', function($scope, $ionicPlatform, $cordovaImagePicker) {
+.controller('SpotCtrl', function($scope, $ionicPlatform) {
 
 
 	$scope.upload = function(){
