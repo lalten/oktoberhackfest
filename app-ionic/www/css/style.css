@@ -19,3 +19,22 @@
 	width: 100%;
 	text-align: center;
 }
+
+.bar.bar-dark.bar-footer {
+    background-color: #fff;
+    height: 70px;
+    position:absolute;
+}
+.bar.bar-dark {
+    background-image: url("https://www.dropbox.com/home/assets?preview=notif_back.png");
+
+}  
+
+.footer{
+  width: 2000px;
+}
+
+h1:first-child {
+  padding-top: 10px;
+  font-size: 18px;
+}

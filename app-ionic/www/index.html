@@ -30,7 +30,7 @@
 		   	</ion-view>
 		</ion-nav-view>
 		<ion-nav-buttons side="left">
-		    <a style="color: white;" href="/www" class="button button-icon icon ion-home"></a>
+		    <a style="color: white;" href="/#" class="button button-icon icon ion-home"></a>
 		</ion-nav-buttons>
 		<ion-nav-buttons side="right">
 			 <a style="color: white;" class="button button-icon icon ion-person-stalker" ng-click="clickCreaElencoSpese()" ng-href="#/profile"></a>
@@ -61,15 +61,23 @@
 		        </div>
 		    </div>
 		</ion-content>
+
 		<ion-footer-bar class="bar-dark">
-		  <a href="#/spot" class="button button-icon" id="btnSpot">Hey man! You entered IHK space. Press to see the content!</a>
+			<div>
+				<div class="container-fluid footer">
+					<img src = url("img/footer.png")>
+						<div>
+							<h1> Hey man! You entered IHK space. </h1>
+							<a href="#/spot" class="button button-icon" id="btnSpot"> Press to see the content!</a>
+						</div>
+				</div>
+			</div>				
 		</ion-footer-bar>
 	  </ion-view>
 	</script>
 	<script type="text/ng-template" id="spot.html">
 	  <ion-view title="Spot View">
   		<ion-content ng-controller="SpotCtrl">
-        <h1 class="title">Spot View</h1>
         <div class="row">
           <div class="col col-80">
             <div class="list list-inset">
@@ -89,7 +97,24 @@
         </div>
 
         <!-- list of images -->
+        <div class="list card">
 
+				  <div class="item item-avatar">
+				    <img src="http://www.horst-lichter.de/images/horst-lichter-jetzt-kocht-er-auch-noch.jpg">
+				    <h2>Horst</h2>
+				    <p>20.09.2015</p>
+				  </div>
+
+				  <div class="item item-image">
+				    <img src="http://placehold.it/200x200">
+				  </div>
+
+				  <a class="item item-icon-left assertive" href="#">
+				    <i class="icon ion-music-note"></i>
+				    Start listening
+				  </a>
+
+				</div>
         <ion-list>
         <ion-item ng-repeat="item in items">
           Hello, {{item}}!
